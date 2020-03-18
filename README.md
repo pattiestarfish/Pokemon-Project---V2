@@ -6,8 +6,10 @@
  --added Pokemon functions: lose HP, gain HP, revive, attack pokemon
  --added Trainer functions: attack trainer's active pokemon, use potion, change pokemon
  
-3/18/2020: created pokemon_decorators.py
+3/18/2020: created pokemon_decorators.py, pokemon_UI.py, (removed test.py)
+--integrated user interface into pokemon_UI file, replaced tester
 --added decorators to title actions including battles, changing pokemons, using potions
 --added user input/raw_input support for Trainer functions, additional bug fixes
 
 *plan on adding additional decorators and user functions
+--
