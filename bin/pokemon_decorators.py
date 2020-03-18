@@ -5,12 +5,22 @@ def battle_decorator(print_battle):
 
 @battle_decorator
 def print_battle(self, target):
-    print("--===--" + self + " attacks " + target + "--===--")
+    print("___Trainer " + '*' + self + "* attacks " + "Trainer " + '*' + target + '*___')
+
+
+def change_poke_decorator(print_battle):
+    def wrapper(*args):
+        print_battle(*args)
+    return wrapper
+
+@change_poke_decorator
+def print_change_poke(self):
+    print("___Trainer " + '*' + str(self) + "* changes Pokemon!!")
+
 
 
 #function ideas:
 #max of 6 pokemon
 #turn based battle (choose attack, use item, pass turn)
 #add decorators for using items/changing pokemon/etc
-#
-3
+#add randomization of pokemon teams upon instancing

@@ -1,5 +1,9 @@
 from pip._vendor.distlib.compat import raw_input
-from pokemon_decorators import battle_decorator, print_battle
+from pokemon_decorators import battle_decorator, print_battle, change_poke_decorator, print_change_poke
+
+
+
+
 
 # Pokemon skills, type separated: [name, damage]
 fire_skills = {'fireball': 12, 'flamethrower': 19, 'inferno fire': 28, 'tackle': 7}
@@ -37,13 +41,14 @@ class Pokemon:
         # print(self.name + ' takes ' + str(dmg) + ' damage: ')
         if self.curr_hp > 0 and self.TKO == False:
             self.curr_hp -= dmg
-            if self.curr_hp < 0:
+            if self.curr_hp <= 0:
                 self.TKO = True
-                return ('(' + str(self.curr_hp) + '/' + str(
-                    self.max_hp) + ' HP), ' + self.name + ' takes ' + str(dmg) + ' damage and has been KOed!!') + '\n'
-        #  knock_out(self)
-        return (self.name + ' takes ' + str(round(dmg)) + ' damage, and now has ' + str(round(self.curr_hp)) + '/' + str(
-            self.max_hp) + ' HP.') + '\n'
+                print(('(' + str(self.curr_hp) + '/' + str(
+                    self.max_hp) + ' HP), ' + self.name + ' takes ' + str(dmg) + ' damage and has been KOed!!') + '\n')
+                return True
+        print((self.name + ' takes ' + str(round(dmg)) + ' damage, and now has ' + str(round(self.curr_hp)) + '/' + str(
+            self.max_hp) + ' HP.') + '\n')
+        return True
 
     def gain_health(self, gain):
         print(self.name + ": recovering " + str(gain) + ' health..')
@@ -95,9 +100,15 @@ bulbasaur = Pokemon('Bulbusaur', 14, 'Grass')
 squirtle = Pokemon('Squirtle', 15, 'Water')
 lapras = Pokemon('Lapras', 21, 'Water')
 ninetails = Pokemon('Ninetails', 23, 'Fire')
+bellsprout = Pokemon('Bellsprout', 20, 'Grass')
+starmie = Pokemon('Starmie', 18, 'Water')
+flareon = Pokemon('Flareon', 24, 'Fire')
+jolteon = Pokemon('Jolteon', 23, 'Electric')
+voltorb = Pokemon('Voltorb', 20, 'Electric')
+magikarp = Pokemon('Magikarp', 14, 'Water')
 
 #identifying player poke's
-player_pokemon = {'Pat': [charmander, pikachu, lapras, ninetails], 'Gary': [bulbasaur, squirtle]}
+player_pokemon = {'Pat': [charmander, pikachu, lapras, ninetails, jolteon, starmie, bellsprout], 'Gary': [bulbasaur, squirtle, flareon, bellsprout, voltorb, magikarp]}
 
 class Trainer:
     def __init__(self, name, pokemons=None, current_pokemon=None, potions=None, ):
@@ -107,9 +118,11 @@ class Trainer:
         self.potions = potions
         if pokemons is None and self.name in player_pokemon:
             self.pokemons = player_pokemon.get(self.name)
+            if(len(self.pokemons))>6:
+                print(self.name + " exceeded max pokemon roster limit (6), removing " + str(self.pokemons[6]))
+                self.pokemons.pop()
         if current_pokemon is None:
             self.current_pokemon = player_pokemon.get(self.name)[0]
-
     def __repr__(self):
         return ("Initializing trainer " + self.name + ":\n" + self.name + '\'s team: ' + str(
             self.pokemons) + '\nActive Pokemon: ' + str(self.current_pokemon)) + '\n'
@@ -129,7 +142,7 @@ class Trainer:
                      battle_instance_dmg.append(values.get(key))
                    for val in values:
                         battle_instance_skill.append(val)
-        temp = input('Choose skill # (1-4): ')
+        temp = input('Choose a skill # (1-4): ')
         temp = int(temp) - 1
         skill = battle_instance_skill[temp]
         battle = self.current_pokemon.attack(target_trainer.current_pokemon, skill)
@@ -140,15 +153,29 @@ class Trainer:
         heal = self.current_pokemon.gain_health(default_potions.get(potion_name))
         return heal
 
-    def change_pokemon(self, poke_name):
-        print(self.name + " substitutes " + poke_name + " for " + self.current_pokemon.name + "...")
+    def change_pokemon(self, poke_name=None):
+        print_change_poke(self.name)
+        change_poke_instance = []
+        if poke_name == None:
+          iter2 = 1
+          for poke in self.pokemons:
+            print(str(iter2) + '). ' + str(poke))
+            change_poke_instance.append(poke.name)
+            iter2 += 1
+        temp = input('Choose a pokemon # (1-6): ')
+        temp = int(temp) - 1
+        poke_name = change_poke_instance[temp]
+        print(self.name + " substitutes " + poke_name + " for " + str(self.current_pokemon.name) + "...")
         if (self.current_pokemon.name == poke_name):
-            return str(self.current_pokemon.name) + " is already active!\n"
+            print(str(self.current_pokemon.name) + " is already active!\n")
+            return True
         else:
             i = 0
             for i in range(len(self.pokemons)):
                 if (self.pokemons[i].name == poke_name):
                     self.current_pokemon = player_pokemon.get(self.name)[i]
-                    return str(self.current_pokemon.name) + " is now active!\n"
+                    print(str(self.current_pokemon.name) + " is now active!\n")
+                    return True
                 i += 1
-        return "Error, you do not own " + poke_name
+        print("Error, you do not own " + poke_name)
+        return True
